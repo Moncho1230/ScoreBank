@@ -1,10 +1,13 @@
 from fastapi import FastAPI
+from app.db import Base, engine
 
 app = FastAPI(
 	title="ScoreBank API",
 	version="1.0.0",
 	description="API principal de ScoreBank",
 )
+
+Base.metadata.create_all(bind=engine)
 
 
 @app.get("/", tags=["Root"])
