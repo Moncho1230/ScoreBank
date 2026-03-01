@@ -1,17 +1,17 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from app.models.solicitud import Solicitud
+from app.models.solicitud import SolicitudCredito
 from app.models.cliente import Cliente
 from app.models.evaluacion import Evaluacion
 
 
-def calcular_score(cliente: Cliente, solicitud: Solicitud) -> int:
+def calcular_score(cliente: Cliente, solicitud: SolicitudCredito) -> int:
     score = 500
 
-    if cliente.ingresos_mensuales > 3000000:
+    if cliente.ingreso_mensual > 3000000:
         score += 100
 
-    if solicitud.monto_solicitado < cliente.ingresos_mensuales * 5:
+    if solicitud.monto_solicitado < cliente.ingreso_mensual * 5:
         score += 100
 
     if solicitud.plazo_meses <= 24:
@@ -21,8 +21,8 @@ def calcular_score(cliente: Cliente, solicitud: Solicitud) -> int:
 
 
 def evaluar_solicitud(solicitud_id: int, db: Session):
-    solicitud = db.query(Solicitud).filter(
-        Solicitud.id == solicitud_id
+    solicitud = db.query(SolicitudCredito).filter(
+        SolicitudCredito.id == solicitud_id
     ).first()
 
     if not solicitud:
@@ -43,7 +43,7 @@ def evaluar_solicitud(solicitud_id: int, db: Session):
         solicitud_id=solicitud.id,
         score_calculado=score,
         decision=decision,
-        observaciones="Evaluación automática generada por el sistema"
+        razon="Evaluación automática generada por el sistema"
     )
 
     solicitud.estado = decision
