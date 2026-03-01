@@ -5,22 +5,8 @@ from app.models.cliente import Cliente
 from app.models.evaluacion import Evaluacion
 
 
-def calcular_score(cliente: Cliente, solicitud: SolicitudCredito) -> int:
-    score = 500
-
-    if cliente.ingreso_mensual > 3000000:
-        score += 100
-
-    if solicitud.monto_solicitado < cliente.ingreso_mensual * 5:
-        score += 100
-
-    if solicitud.plazo_meses <= 24:
-        score += 50
-
-    return score
-
-
 def evaluar_solicitud(solicitud_id: int, db: Session):
+
     solicitud = db.query(SolicitudCredito).filter(
         SolicitudCredito.id == solicitud_id
     ).first()
@@ -35,18 +21,42 @@ def evaluar_solicitud(solicitud_id: int, db: Session):
     if not cliente:
         raise HTTPException(status_code=404, detail="Cliente no encontrado")
 
-    score = calcular_score(cliente, solicitud)
+    # 🔹 Calcular nivel de endeudamiento real
+    if cliente.ingreso_mensual == 0:
+        raise HTTPException(status_code=400, detail="Ingreso mensual inválido")
 
-    decision = "APROBADO" if score >= 650 else "RECHAZADO"
+    nivel_endeudamiento = cliente.deuda_actual / cliente.ingreso_mensual
+
+    # 🔹 Reglas de decisión
+    if cliente.puntaje_crediticio < 600:
+        decision = "RECHAZADO"
+        razon = "Puntaje crediticio bajo"
+        tasa = None
+
+    elif nivel_endeudamiento > 0.4:
+        decision = "RECHAZADO"
+        razon = "Alto nivel de endeudamiento"
+        tasa = None
+
+    elif cliente.puntaje_crediticio > 750 and nivel_endeudamiento < 0.2:
+        decision = "APROBADO"
+        razon = "Cliente con perfil preferencial"
+        tasa = 0.08
+
+    else:
+        decision = "APROBADO_CON_CONDICIONES"
+        razon = "Aprobado con tasa estándar"
+        tasa = 0.12
 
     nueva_evaluacion = Evaluacion(
         solicitud_id=solicitud.id,
-        score_calculado=score,
+        score_calculado=cliente.puntaje_crediticio,
         decision=decision,
-        razon="Evaluación automática generada por el sistema"
+        razon=razon
     )
 
     solicitud.estado = decision
+    solicitud.tasa_interes = tasa
 
     db.add(nueva_evaluacion)
     db.commit()
