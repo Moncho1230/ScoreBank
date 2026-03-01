@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.db import Base, engine
+from app.routers import cliente_router, evaluacion_router, solicitud_router
 
 app = FastAPI(
 	title="ScoreBank API",
@@ -8,6 +9,11 @@ app = FastAPI(
 )
 
 Base.metadata.create_all(bind=engine)
+
+app.include_router(cliente_router.router)
+app.include_router(evaluacion_router.router)
+app.include_router(solicitud_router.router)
+
 
 
 @app.get("/", tags=["Root"])
