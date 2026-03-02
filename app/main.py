@@ -21,9 +21,9 @@ def read_root() -> dict[str, str]:
 	return {"message": "ScoreBank API activa"}
 
 
-@app.get("/health", tags=["Health"])
-def health_check() -> dict[str, str]:
-	return {"status": "ok"}
+@app.get("/healthz")
+def health_check():
+    return {"status": "ok"}
 
 
 if __name__ == "__main__":
