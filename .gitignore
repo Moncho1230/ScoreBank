@@ -10,7 +10,6 @@ venv/
 .env/
 .venv/
 
-# Environment variables
 .env
 .env.*
 
@@ -48,22 +47,9 @@ Thumbs.db
 *.pid
 *.seed
 
-# =========================
-# Alembic (si lo usas)
-# =========================
 alembic/versions/__pycache__/
 
-# =========================
-# Local database (si alguna vez usas sqlite)
-# =========================
 *.db
 
-# =========================
-# Migrations cache
-# =========================
 *.pyc
-
-# =========================
-# Node (si algún día agregas frontend)
-# =========================
 node_modules/
