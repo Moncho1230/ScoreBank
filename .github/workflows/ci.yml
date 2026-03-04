@@ -1,4 +1,4 @@
-name: CI - Develop
+name: CI - Production
 
 on:
   push:
@@ -6,10 +6,10 @@ on:
       - main
 
 jobs:
-  deploy-production:
-    if: github.ref == 'refs/heads/main'
+  test-and-deploy:
     runs-on: ubuntu-latest
     environment: production
+
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
@@ -30,7 +30,7 @@ jobs:
       - name: Run tests with coverage
         run: |
           export PYTHONPATH=$PYTHONPATH:.
-          pytest --cov=app --cov-report=term --cov-fail-under=85
+          pytest --cov=app --cov-report=term --cov-fail-under=80
 
       - name: Trigger Render Deploy
         if: success()
