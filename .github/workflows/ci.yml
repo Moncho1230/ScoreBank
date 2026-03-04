@@ -8,6 +8,8 @@ on:
 jobs:
   test-and-deploy:
     runs-on: ubuntu-latest
+    environment: staging   # 👈 ESTA ES LA CLAVE
+
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
