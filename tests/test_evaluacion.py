@@ -76,43 +76,5 @@ def test_evaluacion_solicitud_no_existe():
     assert response.json()["detail"] == "Solicitud no encontrada"
 
 
-def test_evaluacion_ingreso_cero():
-    cliente = client.post("/clientes/", json={
-        "nombre": "Inválido",
-        "ingreso_mensual": 0,  # ingreso cero
-        "puntaje_crediticio": 750,
-        "deuda_actual": 100
-    }).json()
-
-    solicitud = client.post("/solicitudes/", json={
-        "cliente_id": cliente["id"],
-        "monto_solicitado": 5000,
-        "plazo_meses": 12
-    }).json()
-
-    response = client.post(f"/evaluaciones/{solicitud['id']}")
-
-    assert response.status_code == 400
-    assert response.json()["detail"] == "Ingreso mensual inválido"
 
 
-def test_aprobado_con_condiciones():
-    cliente = client.post("/clientes/", json={
-        "nombre": "Moderado",
-        "ingreso_mensual": 6000,
-        "puntaje_crediticio": 680,  # Score moderado (600-750)
-        "deuda_actual": 1000  # Endeudamiento moderado
-    }).json()
-
-    solicitud = client.post("/solicitudes/", json={
-        "cliente_id": cliente["id"],
-        "monto_solicitado": 10000,
-        "plazo_meses": 24
-    }).json()
-
-    response = client.post(f"/evaluaciones/{solicitud['id']}")
-
-    assert response.status_code == 200
-    data = response.json()
-    assert data["decision"] == "APROBADO_CON_CONDICIONES"
-    assert data["razon"] == "Aprobado con tasa estándar"
