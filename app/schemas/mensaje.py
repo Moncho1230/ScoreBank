@@ -1,4 +1,3 @@
-# app/schemas/mensaje.py
 from pydantic import BaseModel
 from typing import Optional, Any
 from app.schemas.cliente import ClienteResponse
