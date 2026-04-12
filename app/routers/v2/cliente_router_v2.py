@@ -2,7 +2,7 @@
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Annotated
 import os
 
 from app.db import get_db
@@ -17,7 +17,7 @@ API2_URL = os.getenv("API2_URL", "--- IGNORE ---")
 
 
 @router.post("/", response_model=ClienteResponse, status_code=201)
-def crear_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
+def crear_cliente(cliente: ClienteCreate, db: Annotated[Session, Depends(get_db)]):
     nuevo = Cliente(**cliente.dict())
     db.add(nuevo)
     db.commit()
@@ -26,32 +26,20 @@ def crear_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=List[ClienteResponse])
-def listar_clientes(db: Session = Depends(get_db)):
+def listar_clientes(db: Annotated[Session, Depends(get_db)]):
     return db.query(Cliente).all()
 
 
-@router.get("/{cliente_id}", response_model=ClienteResponse)
-def obtener_cliente(cliente_id: int, db: Session = Depends(get_db)):
+@router.get("/{cliente_id}", response_model=ClienteResponse, responses={404: {"description": CLIENTE_NO_ENCONTRADO}})
+def obtener_cliente(cliente_id: int, db: Annotated[Session, Depends(get_db)]):
     cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
     if not cliente:
         raise HTTPException(status_code=404, detail=CLIENTE_NO_ENCONTRADO)
     return cliente
 
 
-@router.put("/{cliente_id}", response_model=ClienteResponse)
-def put_cliente(cliente_id: int, datos: ClienteUpdate, db: Session = Depends(get_db)):
-    cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
-    if not cliente:
-        raise HTTPException(status_code=404, detail=CLIENTE_NO_ENCONTRADO)
-    for key, value in datos.dict(exclude_unset=True).items():
-        setattr(cliente, key, value)
-    db.commit()
-    db.refresh(cliente)
-    return cliente
-
-
-@router.patch("/{cliente_id}", response_model=ClienteResponse)
-def patch_cliente(cliente_id: int, datos: ClienteUpdate, db: Session = Depends(get_db)):
+@router.put("/{cliente_id}", response_model=ClienteResponse, responses={404: {"description": CLIENTE_NO_ENCONTRADO}})
+def put_cliente(cliente_id: int, datos: ClienteUpdate, db: Annotated[Session, Depends(get_db)]):
     cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
     if not cliente:
         raise HTTPException(status_code=404, detail=CLIENTE_NO_ENCONTRADO)
@@ -62,8 +50,20 @@ def patch_cliente(cliente_id: int, datos: ClienteUpdate, db: Session = Depends(g
     return cliente
 
 
-@router.delete("/{cliente_id}")
-def eliminar_cliente(cliente_id: int, db: Session = Depends(get_db)):
+@router.patch("/{cliente_id}", response_model=ClienteResponse, responses={404: {"description": CLIENTE_NO_ENCONTRADO}})
+def patch_cliente(cliente_id: int, datos: ClienteUpdate, db: Annotated[Session, Depends(get_db)]):
+    cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
+    if not cliente:
+        raise HTTPException(status_code=404, detail=CLIENTE_NO_ENCONTRADO)
+    for key, value in datos.dict(exclude_unset=True).items():
+        setattr(cliente, key, value)
+    db.commit()
+    db.refresh(cliente)
+    return cliente
+
+
+@router.delete("/{cliente_id}", responses={404: {"description": CLIENTE_NO_ENCONTRADO}})
+def eliminar_cliente(cliente_id: int, db: Annotated[Session, Depends(get_db)]):
     cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
     if not cliente:
         raise HTTPException(status_code=404, detail=CLIENTE_NO_ENCONTRADO)
@@ -74,8 +74,8 @@ def eliminar_cliente(cliente_id: int, db: Session = Depends(get_db)):
 
 # Flujo encadenado
 
-@router.post("/procesar/{cliente_id}", response_model=MensajeDTO)
-async def iniciar_flujo(cliente_id: int, db: Session = Depends(get_db)):
+@router.post("/procesar/{cliente_id}", response_model=MensajeDTO, responses={404: {"description": CLIENTE_NO_ENCONTRADO}, 502: {"description": "Error en API #2"}, 503: {"description": "API #2 no disponible"}})
+async def iniciar_flujo(cliente_id: int, db: Annotated[Session, Depends(get_db)]):
     
     cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
     if not cliente:
