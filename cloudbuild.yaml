@@ -1,0 +1,36 @@
+# cloudbuild.yaml
+steps:
+  # Paso 1 — construye la imagen con el commit SHA como tag
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - build
+      - -t
+      - us-central1-docker.pkg.dev/$PROJECT_ID/scorebank-repo/scorebank-api:$COMMIT_SHA
+      - -t
+      - us-central1-docker.pkg.dev/$PROJECT_ID/scorebank-repo/scorebank-api:latest
+      - .
+
+  # Paso 2 — sube la imagen al Artifact Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - push
+      - us-central1-docker.pkg.dev/$PROJECT_ID/scorebank-repo/scorebank-api:$COMMIT_SHA
+
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - push
+      - us-central1-docker.pkg.dev/$PROJECT_ID/scorebank-repo/scorebank-api:latest
+
+  # Paso 3 — despliega en GKE con la nueva imagen
+  - name: "gcr.io/cloud-builders/kubectl"
+    args:
+      - set
+      - image
+      - deployment/scorebank-api
+      - scorebank-api=us-central1-docker.pkg.dev/$PROJECT_ID/scorebank-repo/scorebank-api:$COMMIT_SHA
+    env:
+      - CLOUDSDK_COMPUTE_REGION=us-central1
+      - CLOUDSDK_CONTAINER_CLUSTER=scorebank-cluster
+
+options:
+  logging: CLOUD_LOGGING_ONLY

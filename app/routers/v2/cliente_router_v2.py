@@ -87,7 +87,7 @@ async def iniciar_flujo(cliente_id: int, db: Annotated[Session, Depends(get_db)]
     async with httpx.AsyncClient(timeout=30.0) as client:
         try:
             response = await client.post(
-                f"{API2_URL}/api/v2/podcasts/procesar",
+                f"{API2_URL}/v2/chain/receive",
                 json=mensaje.dict()
             )
             response.raise_for_status()

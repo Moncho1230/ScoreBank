@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scorebank-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scorebank-api
+  template:
+    metadata:
+      labels:
+        app: scorebank-api
+    spec:
+      serviceAccountName: scorebank-sa
+      containers:
+        - name: scorebank-api
+          image: us-central1-docker.pkg.dev/api-devops-493100/scorebank-repo/scorebank-api:1.0.0
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: scorebank-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+              ephemeral-storage: 100Mi
+            limits:
+              memory: 512Mi
+
+        - name: cloud-sql-proxy
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.0
+          args:
+            - "--structured-logs"
+            - "--port=5432"
+            - "--credentials-file=/secrets/key.json"
+            - "api-devops-493100:us-central1:score-bank"
+          volumeMounts:
+            - name: gcp-key
+              mountPath: /secrets
+              readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+              ephemeral-storage: 50Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            runAsNonRoot: true
+
+      volumes:
+        - name: gcp-key
+          secret:
+            secretName: scorebank-gcp-key
