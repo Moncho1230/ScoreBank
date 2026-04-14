@@ -1,17 +1,14 @@
-from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
-from datetime import datetime
+from sqlalchemy import Column, Integer, Numeric, String, DateTime, ForeignKey
+from sqlalchemy.sql import func
 from app.db import Base
 
 class SolicitudCredito(Base):
     __tablename__ = "solicitudes_credito"
 
     id = Column(Integer, primary_key=True, index=True)
-    cliente_id = Column(Integer, ForeignKey("clientes.id"))
-    monto_solicitado = Column(Float, nullable=False)
+    cliente_id = Column(Integer, ForeignKey("clientes.id"), nullable=False)
+    monto_solicitado = Column(Numeric, nullable=False)
     plazo_meses = Column(Integer, nullable=False)
-    estado = Column(String, default="PENDIENTE")
-    tasa_interes = Column(Float, nullable=True)
-    fecha_creacion = Column(DateTime, default=datetime.utcnow)
-
-    cliente = relationship("Cliente")
+    estado = Column(String, nullable=False, default="PENDIENTE")
+    tasa_interes = Column(Numeric, nullable=True)
+    fecha_creacion = Column(DateTime, server_default=func.now())

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Annotated
 
 from app.db import get_db
 from app.models.cliente import Cliente
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/clientes", tags=["Clientes"])
 CLIENTE_NO_ENCONTRADO = "Cliente no encontrado"
 
 @router.post("/", response_model=ClienteResponse)
-def crear_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
+def crear_cliente(cliente: ClienteCreate, db: Annotated[Session, Depends(get_db)]):
 
     nuevo_cliente = Cliente(**cliente.dict())
 
@@ -28,14 +28,14 @@ def crear_cliente(cliente: ClienteCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=List[ClienteResponse])
-def listar_clientes(db: Session = Depends(get_db)):
+def listar_clientes(db: Annotated[Session, Depends(get_db)]):
 
     clientes = db.query(Cliente).all()
     return clientes
 
 
-@router.get("/{cliente_id}", response_model=ClienteResponse)
-def obtener_cliente(cliente_id: int, db: Session = Depends(get_db)):
+@router.get("/{cliente_id}", response_model=ClienteResponse, responses={404: {"description": CLIENTE_NO_ENCONTRADO}})
+def obtener_cliente(cliente_id: int, db: Annotated[Session, Depends(get_db)]):
 
     cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
 
@@ -44,8 +44,8 @@ def obtener_cliente(cliente_id: int, db: Session = Depends(get_db)):
 
     return cliente
 
-@router.put("/{cliente_id}", response_model=ClienteResponse)
-def actualizar_cliente(cliente_id: int, datos: ClienteUpdate, db: Session = Depends(get_db)):
+@router.put("/{cliente_id}", response_model=ClienteResponse, responses={404: {"description": CLIENTE_NO_ENCONTRADO}})
+def actualizar_cliente(cliente_id: int, datos: ClienteUpdate, db: Annotated[Session, Depends(get_db)]):
 
     cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
 
@@ -61,8 +61,8 @@ def actualizar_cliente(cliente_id: int, datos: ClienteUpdate, db: Session = Depe
     return cliente
 
 
-@router.delete("/{cliente_id}")
-def eliminar_cliente(cliente_id: int, db: Session = Depends(get_db)):
+@router.delete("/{cliente_id}", responses={404: {"description": CLIENTE_NO_ENCONTRADO}})
+def eliminar_cliente(cliente_id: int, db: Annotated[Session, Depends(get_db)]):
 
     cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
 

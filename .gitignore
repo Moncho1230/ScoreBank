@@ -50,6 +50,9 @@ Thumbs.db
 alembic/versions/__pycache__/
 
 *.db
-
 *.pyc
+
+# Node
 node_modules/
+
+scorebank-sa-key.json
