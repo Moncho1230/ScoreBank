@@ -15,7 +15,8 @@ spec:
       serviceAccountName: scorebank-sa
       containers:
         - name: scorebank-api
-          image: us-central1-docker.pkg.dev/api-devops-493100/scorebank-repo/scorebank-api:1.0.0
+          # Probablemente tenías una versión fija aquí que sí existía
+          image: us-central1-docker.pkg.dev/api-devops-493100/scorebank-repo/scorebank-api:1.0.0 
           ports:
             - containerPort: 8000
           envFrom:
@@ -23,7 +24,7 @@ spec:
                 name: scorebank-secrets
           resources:
             requests:
-              cpu: 100m
+              cpu: 100m      # Recursos mínimos
               memory: 128Mi
               ephemeral-storage: 100Mi
             limits:
