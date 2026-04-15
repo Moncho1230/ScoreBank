@@ -74,15 +74,27 @@ def eliminar_cliente(cliente_id: int, db: Annotated[Session, Depends(get_db)]):
 
 # Flujo encadenado
 
-@router.post("/procesar/{cliente_id}", response_model=MensajeDTO, responses={404: {"description": CLIENTE_NO_ENCONTRADO}, 502: {"description": "Error en API #2"}, 503: {"description": "API #2 no disponible"}})
-async def iniciar_flujo(cliente_id: int, db: Annotated[Session, Depends(get_db)]):
-    
+from typing import Optional
+
+@router.post("/integration/multicloud/{cliente_id}", response_model=MensajeDTO,
+             responses={404: {"description": CLIENTE_NO_ENCONTRADO},
+                        502: {"description": "Error en API #2"},
+                        503: {"description": "API #2 no disponible"}})
+async def iniciar_flujo(
+    cliente_id: int,
+    db: Annotated[Session, Depends(get_db)],
+    podcast_id: Optional[int] = None,
+    vehicle_id: Optional[int] = None
+):
     cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
     if not cliente:
         raise HTTPException(status_code=404, detail=CLIENTE_NO_ENCONTRADO)
 
-
-    mensaje = MensajeDTO(cliente=ClienteResponse.from_orm(cliente))
+    mensaje = MensajeDTO(
+        cliente=ClienteResponse.from_orm(cliente),
+        podcast_id=podcast_id,
+        vehicle_id=vehicle_id
+    )
 
     async with httpx.AsyncClient(timeout=30.0) as client:
         try:
@@ -102,5 +114,4 @@ async def iniciar_flujo(cliente_id: int, db: Annotated[Session, Depends(get_db)]
                 detail="API #2 no disponible"
             )
 
-    
     return response.json()
