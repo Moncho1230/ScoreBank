@@ -15,7 +15,8 @@ spec:
       serviceAccountName: scorebank-sa
       containers:
         - name: scorebank-api
-          image: us-central1-docker.pkg.dev/api-devops-493100/scorebank-repo/scorebank-api:1.0.0
+          image: us-central1-docker.pkg.dev/api-devops-493100/scorebank-repo/scorebank-api:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
           envFrom:
@@ -23,10 +24,11 @@ spec:
                 name: scorebank-secrets
           resources:
             requests:
-              cpu: 100m
-              memory: 128Mi
+              cpu: 250m
+              memory: 512Mi
               ephemeral-storage: 100Mi
             limits:
+              cpu: 500m
               memory: 512Mi
 
         - name: cloud-sql-proxy
@@ -42,10 +44,11 @@ spec:
               readOnly: true
           resources:
             requests:
-              cpu: 50m
-              memory: 64Mi
+              cpu: 100m
+              memory: 128Mi
               ephemeral-storage: 50Mi
             limits:
+              cpu: 200m
               memory: 256Mi
           securityContext:
             runAsNonRoot: true
