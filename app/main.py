@@ -5,6 +5,7 @@ from app.db import Base, engine
 from app.routers import cliente_router, evaluacion_router, solicitud_router
 from app.routers.v2 import cliente_router_v2
 from sqlalchemy import text
+from prometheus_fastapi_instrumentator import Instrumentator
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +14,8 @@ app = FastAPI(
     version="2.0.0",
     description="API principal de ScoreBank",
 )
+
+Instrumentator().instrument(app).expose(app)
 
 @app.on_event("startup")
 def startup():
