@@ -35,7 +35,7 @@ spec:
             - "--structured-logs"
             - "--port=5432"
             - "--credentials-file=/secrets/key.json"
-            - "api-devops-493100:us-central1:score-bank"
+            - "api-devops-493100:us-central1:scorebank-db"
           volumeMounts:
             - name: gcp-key
               mountPath: /secrets
