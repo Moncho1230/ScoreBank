@@ -99,7 +99,7 @@ async def iniciar_flujo(
     async with httpx.AsyncClient(timeout=30.0) as client:
         try:
             response = await client.post(
-                f"{API2_URL}/v2/chain/receive",
+                f"{API2_URL}/integration/multicloud",
                 json=mensaje.dict()
             )
             response.raise_for_status()
