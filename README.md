@@ -4,6 +4,9 @@ API REST para evaluación y gestión de créditos bancarios, desplegada en Googl
 
 ---
 
+<img width="2560" height="1396" alt="WhatsApp Image 2026-04-15 at 6 01 21 PM" src="https://github.com/user-attachments/assets/19feae15-4ae4-4ab7-9ad4-d3e6da19c289" />
+
+
 ## Tabla de contenidos
 
 - [Descripción](#descripción)
