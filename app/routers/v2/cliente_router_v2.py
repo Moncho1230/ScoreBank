@@ -83,8 +83,8 @@ from typing import Optional
 async def iniciar_flujo(
     cliente_id: int,
     db: Annotated[Session, Depends(get_db)],
-    podcast_id: Optional[int] = None,
-    vehicle_id: Optional[int] = None
+    podcast_id: Optional[str] = None,
+    vehicle_id: Optional[str] = None
 ):
     cliente = db.query(Cliente).filter(Cliente.id == cliente_id).first()
     if not cliente:

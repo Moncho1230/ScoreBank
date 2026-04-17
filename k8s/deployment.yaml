@@ -15,7 +15,7 @@ spec:
       serviceAccountName: scorebank-sa
       containers:
         - name: scorebank-api
-          image: us-central1-docker.pkg.dev/api-devops-493100/scorebank-repo/scorebank-api:1.0.0
+          image: us-central1-docker.pkg.dev/api-devops-493100/scorebank-repo/scorebank-api:manual-v1
           ports:
             - containerPort: 8000
           envFrom:
