@@ -1,0 +1,7 @@
+output "cloud_run_url" {
+  value = google_cloud_run_v2_service.api.uri
+}
+
+output "service_account_email" {
+  value = google_service_account.cloud_run_sa.email
+}
