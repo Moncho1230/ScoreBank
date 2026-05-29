@@ -36,11 +36,23 @@ app.include_router(cliente_router_v2.router, prefix="/api/v2", tags=["Clientes v
 
 @app.get("/", tags=["Root"])
 def read_root():
-    return {"message": "ScoreBank API activa"}
+    return {"message": "ScoreBank API activa y con version canary"}
 
 @app.get("/healthz", tags=["Health"])
 def health_check():
     return {"status": "ok"}
+
+@app.get("/canary", tags=["Canary"])
+def canary_health_check():
+    return {
+        "status": "canary",
+        "version": "4.0.0-canary",
+        "deployment_date": "2026-05-28",
+        "service": "ScoreBank API",
+        "environment": "canary",
+        "message": "Canary version deployed successfully",
+        "visible_change": "This endpoint identifies the Canary deployment"
+    }
 
 @app.on_event("startup")
 def listar_rutas():
