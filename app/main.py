@@ -40,7 +40,12 @@ def read_root():
 
 @app.get("/healthz", tags=["Health"])
 def health_check():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "version": "1.0.0",
+        "deployment": "stable",
+        "date": str(date.today())
+    }
 
 @app.on_event("startup")
 def listar_rutas():

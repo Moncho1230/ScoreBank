@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scorebank-canary
+  labels:
+    app: scorebank
+    version: canary
+spec:
+  replicas: 1        # 20% del tráfico — 1 de 5 pods
+  selector:
+    matchLabels:
+      app: scorebank
+      version: canary
+  template:
+    metadata:
+      labels:
+        app: scorebank
+        version: canary
+    spec:
+      containers:
+        - name: scorebank-api
+          image: scorebankregistry.azurecr.io/scorebank-api:canary
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: scorebank-secrets
+                  key: DATABASE_URL
+            - name: API2_URL
+              valueFrom:
+                secretKeyRef:
+                  name: scorebank-secrets
+                  key: API2_URL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5

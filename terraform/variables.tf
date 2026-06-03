@@ -1,30 +1,29 @@
-variable "project_id" {
-  description = "ID del proyecto en GCP"
+variable "subscription_id" {
+  description = "Azure Subscription ID"
   type        = string
-  default     = "score-bank-devops-cloud"
+  default     = "72deae3a-cbbf-4b1a-91f3-6aa0c8f7669a"
 }
 
-variable "region" {
-  description = "Región de GCP"
+variable "location" {
+  description = "Región de Azure"
   type        = string
-  default     = "us-central1"
+  default     = "East US"
 }
 
 variable "project_name" {
-  description = "Nombre del proyecto para nombrar recursos"
+  description = "Nombre del proyecto"
   type        = string
-  default     = "score-bank-devops-cloud"
+  default     = "scorebank"
+}
+
+variable "resource_group_name" {
+  description = "Nombre del resource group"
+  type        = string
+  default     = "scorebank-rg"
 }
 
 variable "db_password" {
   description = "Contraseña del usuario de la base de datos"
   type        = string
   sensitive   = true
-}
-
-
-variable "image" {
-  description = "Imagen Docker de la API en Artifact Registry"
-  type        = string
-  default     = "us-central1-docker.pkg.dev/score-bank-devops-cloud/score-bank-devops-cloud-repo/scorebank-api:latest"
 }

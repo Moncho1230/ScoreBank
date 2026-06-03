@@ -1,7 +1,12 @@
-output "cloud_run_url" {
-  value = google_cloud_run_v2_service.api.uri
+output "aks_cluster_name" {
+  value = azurerm_kubernetes_cluster.aks.name
 }
 
-output "service_account_email" {
-  value = google_service_account.cloud_run_sa.email
+output "aks_id" {
+  value = azurerm_kubernetes_cluster.aks.id
+}
+
+output "kube_config" {
+  value     = azurerm_kubernetes_cluster.aks.kube_config_raw
+  sensitive = true
 }

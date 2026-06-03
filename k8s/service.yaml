@@ -1,13 +1,15 @@
-# k8s/service.yaml
+# Service común — apunta a AMBOS deployments por el label app: scorebank
+# El tráfico se distribuye proporcionalmente según el número de pods
+# 4 pods stable + 1 pod canary = 80% / 20%
 apiVersion: v1
 kind: Service
 metadata:
   name: scorebank-service
 spec:
-  type: LoadBalancer
   selector:
-    app: scorebank-api
+    app: scorebank
   ports:
     - protocol: TCP
       port: 80
       targetPort: 8000
+  type: ClusterIP

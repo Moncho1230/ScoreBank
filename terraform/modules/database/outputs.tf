@@ -1,15 +1,12 @@
-output "db_connection_name" {
-  value = google_sql_database_instance.postgres.connection_name
-}
-
-output "db_public_ip" {
-  value = google_sql_database_instance.postgres.public_ip_address
+output "db_host" {
+  value = azurerm_mssql_server.sql_server.fully_qualified_domain_name
 }
 
 output "db_name" {
-  value = google_sql_database.database.name
+  value = azurerm_mssql_database.database.name
 }
 
-output "db_user" {
-  value = google_sql_user.user.name
+output "db_connection_string" {
+  value     = "Server=${azurerm_mssql_server.sql_server.fully_qualified_domain_name};Database=scorebank-db;User Id=scorebank_admin;Password=${var.db_password};"
+  sensitive = true
 }

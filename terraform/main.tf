@@ -1,38 +1,34 @@
 module "network" {
-  source       = "./modules/network"
-  project_id   = var.project_id
-  region       = var.region
-  project_name = var.project_name
-}
-
-module "security" {
-  source = "./modules/security"
-  vpc_id = module.network.vpc_id
+  source              = "./modules/network"
+  location            = var.location
+  project_name        = var.project_name
+  resource_group_name = var.resource_group_name
 }
 
 module "storage" {
-  source       = "./modules/storage"
-  project_id   = var.project_id
-  region       = var.region
-  project_name = var.project_name
-}
+  source              = "./modules/storage"
+  location            = var.location
+  project_name        = var.project_name
+  resource_group_name = module.network.resource_group_name
 
-module "database" {
-  source      = "./modules/database"
-  project_id  = var.project_id
-  region      = var.region
-  db_password = var.db_password
-  network_id  = module.network.vpc_id
+  depends_on = [module.network]
 }
 
 module "compute" {
   source              = "./modules/compute"
-  project_id          = var.project_id
-  region              = var.region
-  image               = var.image
-  vpc_connector_id    = module.network.vpc_connector_id
-  db_connection_name  = module.database.db_connection_name
+  location            = var.location
+  project_name        = var.project_name
+  resource_group_name = module.network.resource_group_name
+  subnet_id           = module.network.aks_subnet_id
+  acr_id              = module.storage.acr_id
+
+  depends_on = [module.network, module.storage]
+}
+
+module "database" {
+  source              = "./modules/database"
+  project_name        = var.project_name
+  resource_group_name = module.network.resource_group_name
+  location            = var.location
   db_password         = var.db_password
- 
-  depends_on = [module.database, module.network, module.storage]
 }

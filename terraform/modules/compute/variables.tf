@@ -1,24 +1,19 @@
-variable "project_id" {
+variable "project_name" {
   type = string
 }
 
-variable "region" {
+variable "location" {
   type = string
 }
 
-variable "image" {
+variable "resource_group_name" {
   type = string
 }
 
-variable "vpc_connector_id" {
+variable "subnet_id" {
   type = string
 }
 
-variable "db_connection_name" {
+variable "acr_id" {
   type = string
-}
-
-variable "db_password" {
-  type      = string
-  sensitive = true
 }

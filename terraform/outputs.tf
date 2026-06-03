@@ -1,24 +1,28 @@
-output "cloud_run_url" {
-  description = "URL pública de la API en Cloud Run"
-  value       = module.compute.cloud_run_url
+output "aks_cluster_name" {
+  description = "Nombre del cluster AKS"
+  value       = module.compute.aks_cluster_name
 }
 
-output "cloud_sql_public_ip" {
-  description = "IP pública de Cloud SQL para conexión SSH"
-  value       = module.database.db_public_ip
+output "acr_login_server" {
+  description = "URL del Azure Container Registry"
+  value       = module.storage.acr_login_server
 }
 
-output "cloud_sql_connection_name" {
-  description = "Connection name de Cloud SQL para el proxy"
-  value       = module.database.db_connection_name
+output "resource_group_name" {
+  description = "Nombre del resource group"
+  value       = module.network.resource_group_name
 }
 
-output "artifact_registry_url" {
-  description = "URL del repositorio de Artifact Registry"
-  value       = module.storage.artifact_registry_url
+output "vnet_id" {
+  description = "ID de la Virtual Network"
+  value       = module.network.vnet_id
 }
 
-output "vpc_id" {
-  description = "ID de la VPC creada"
-  value       = module.network.vpc_id
+output "aks_credentials_command" {
+  description = "Comando para conectar kubectl al cluster"
+  value       = "az aks get-credentials --resource-group ${var.resource_group_name} --name ${module.compute.aks_cluster_name}"
+}
+
+output "db_host" {
+  value = module.database.db_host
 }

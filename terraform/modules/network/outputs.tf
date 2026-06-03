@@ -1,15 +1,11 @@
-output "vpc_id" {
-  value = google_compute_network.vpc.id
+output "resource_group_name" {
+  value = azurerm_resource_group.rg.name
 }
 
-output "vpc_name" {
-  value = google_compute_network.vpc.name
+output "aks_subnet_id" {
+  value = azurerm_subnet.aks_subnet.id
 }
 
-output "public_subnet_id" {
-  value = google_compute_subnetwork.public_subnet.id
-}
-
-output "vpc_connector_id" {
-  value = google_vpc_access_connector.connector.id
+output "vnet_id" {
+  value = azurerm_virtual_network.vnet.id
 }
